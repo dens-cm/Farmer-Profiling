@@ -75,7 +75,7 @@ const theme = extendTheme({
                 error: (props) => ({
                     color: mode('light.warning', 'dark.warning')(props),
                     fontSize: 'sm',
-                    fontWeight: '700'
+                    fontWeight: '500'
                 })
             }
         },
