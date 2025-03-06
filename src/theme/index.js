@@ -152,7 +152,7 @@ const theme = extendTheme({
                 }),
                 warning: (props) => ({
                     height: '2.2vw',
-                    color: mode('light.primary', 'dark.primary')(props),
+                    color: mode('light.primary', 'dark.accent')(props),
                     fontSize: 'sm',
                     bg: mode('light.warning', 'dark.warning')(props),
                     borderRadius: '.7vw',
