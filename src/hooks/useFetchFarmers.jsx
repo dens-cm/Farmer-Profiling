@@ -4,7 +4,6 @@ import { firestoreDB } from '../config/FirebaseConfig'
 
 export const useFetchFarmers = () => {
     const [data, setData] = useState([])
-    const [loading, setLoading] = useState(false)
     const [total, setTotal] = useState(0)
     const [error, setError] = useState(null)
 
@@ -12,56 +11,48 @@ export const useFetchFarmers = () => {
         let unsubscribes = []
 
         const fetchFarmers = async () => {
-            try {
-                setLoading(true)
-                const unsubscribeFarmers = onSnapshot(
-                    collection(firestoreDB, 'farmers'),
-                    (farmerSnapshot) => {
-                        const farmersArray = []
+            const unsubscribeFarmers = onSnapshot(
+                collection(firestoreDB, 'farmers'),
+                (farmerSnapshot) => {
+                    const farmersArray = []
 
-                        farmerSnapshot.forEach((farmerDoc) => {
-                            const farmerId = farmerDoc.id
-                            const personalInformationRef = collection(firestoreDB, `farmers/${farmerId}/personal_information`)
+                    farmerSnapshot.forEach((farmerDoc) => {
+                        const farmerId = farmerDoc.id
+                        const personalInformationRef = collection(firestoreDB, `farmers/${farmerId}/personal_information`)
 
-                            const unsubscribePersonalInfo = onSnapshot(
-                                personalInformationRef,
-                                (personalInfoSnapshot) => {
-                                    personalInfoSnapshot.forEach((personalInfoDoc) => {
-                                        farmersArray.push({
-                                            id: farmerId,
-                                            ...personalInfoDoc.data()
-                                        })
+                        const unsubscribePersonalInfo = onSnapshot(
+                            personalInformationRef,
+                            (personalInfoSnapshot) => {
+                                personalInfoSnapshot.forEach((personalInfoDoc) => {
+                                    farmersArray.push({
+                                        id: farmerId,
+                                        ...personalInfoDoc.data()
                                     })
+                                })
 
-                                    setData([...farmersArray])
-                                    setTotal(farmersArray.length)
-                                },
-                                (personalInfoError) => {
-                                    setError(personalInfoError.message)
-                                }
-                            )
-                            unsubscribes.push(unsubscribePersonalInfo)
-                        })
-                    },
-                    (farmerError) => {
-                        setError(farmerError.message)
-                    }
-                )
+                                setData([...farmersArray])
+                                setTotal(farmersArray.length)
+                            },
+                            (personalInfoError) => {
+                                setError(personalInfoError.message)
+                            }
+                        )
+                        unsubscribes.push(unsubscribePersonalInfo)
+                    })
+                },
+                (farmerError) => {
+                    setError(farmerError.message)
+                }
+            )
 
-                unsubscribes.push(unsubscribeFarmers)
-            } catch (err) {
-                setError(err.message)
-            } finally {
-                setLoading(false)
-            }
+            unsubscribes.push(unsubscribeFarmers)
         }
 
         fetchFarmers()
-
         return () => {
             unsubscribes.forEach((unsubscribe) => unsubscribe())
         }
     }, [])
 
-    return { data, total, loading, error }
+    return { data, total, error }
 }

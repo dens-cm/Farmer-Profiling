@@ -366,7 +366,7 @@ export default function AddFarmer({ isOpen, onClose }) {
                                 <Chakra.Box w='100%' mt='1.5vw' display='flex' justifyContent='space-between'>
                                     <Chakra.Box w='48.7%' display='flex' flexDirection='column'>
                                         <Chakra.Text>Email Address:</Chakra.Text>
-                                        <Chakra.Input name='emailAddress' onChange={handlePersonalInformationChange} mt='.1vw' textTransform='capitalize' placeholder='...' />
+                                        <Chakra.Input name='emailAddress' onChange={handlePersonalInformationChange} mt='.1vw' placeholder='...' />
                                     </Chakra.Box>
                                     <Chakra.Box w='23%' display='flex' flexDirection='column'>
                                         <Chakra.Text>Telephone No.:</Chakra.Text>
