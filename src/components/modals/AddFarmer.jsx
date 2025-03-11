@@ -5,7 +5,7 @@ import { storage } from '../../config/FirebaseConfig'
 import { firestoreDB } from '../../config/FirebaseConfig'
 import * as Chakra from '@chakra-ui/react'
 import { IoClose } from "react-icons/io5"
-import { LuSend, LuPlus, LuTrash2 } from "react-icons/lu"
+import { LuSend, LuPlus, LuTrash2, LuFolderOpen, LuUserRoundPlus } from "react-icons/lu"
 import thumnail from '../../assets/thumbnail.png'
 import Toast from '../layouts/Toast'
 
@@ -121,7 +121,7 @@ export default function AddFarmer({ isOpen, onClose }) {
         })
     }
 
-    const handleCropChange = (e, index = null) => {
+    const handleCropChange = (e, index) => {
         setCrop((prevData) => {
             const updatedCrop = [...prevData]
             updatedCrop[index] = {
@@ -174,72 +174,90 @@ export default function AddFarmer({ isOpen, onClose }) {
         setLoading(true)
 
         try {
+            const farmerRef = doc(collection(firestoreDB, 'farmers'))
+            const farmerId = farmerRef.id
+
             let imageUrl = ''
             if (farmerImage) {
-                const farmerId = doc(collection(firestoreDB, 'farmers')).id 
                 const imageRef = ref(storage, `farmers/${farmerId}/farmerImage`)
                 await uploadBytes(imageRef, farmerImage)
                 imageUrl = await getDownloadURL(imageRef)
             }
 
             await runTransaction(firestoreDB, async (transaction) => {
-                const farmerRef = doc(collection(firestoreDB, 'farmers'))
                 transaction.set(farmerRef, {})
 
-                const personalInformationRef = doc(collection(firestoreDB, `farmers/${farmerRef.id}/personal_information`))
+                const personalInformationRef = doc(collection(firestoreDB, `farmers/${farmerId}/personal_information`))
                 transaction.set(personalInformationRef, {
                     ...personalInformation,
                     imageUrl: imageUrl || ''
                 })
 
-                children.forEach((child) => {
-                    if (child.name.trim() !== '') {
-                        const childrenRef = doc(collection(firestoreDB, `farmers/${farmerRef.id}/childrens`))
-                        transaction.set(childrenRef, { ...child })
-                    }
-                })
+                if (Array.isArray(children)) {
+                    children.forEach((child) => {
+                        if (child?.name?.trim()) {
+                            const childrenRef = doc(collection(firestoreDB, `farmers/${farmerId}/childrens`))
+                            transaction.set(childrenRef, { ...child })
+                        }
+                    })
+                }
 
-                const educationRef = doc(collection(firestoreDB, `farmers/${farmerRef.id}/education`))
+                const educationRef = doc(collection(firestoreDB, `farmers/${farmerId}/education`))
                 transaction.set(educationRef, { ...education })
 
-                crop.forEach((crop) => {
-                    if (crop.crop.trim() !== '') {
-                        const cropRef = doc(collection(firestoreDB, `farmers/${farmerRef.id}/crops`))
-                        transaction.set(cropRef, { ...crop })
-                    }
-                })
+                if (Array.isArray(crop)) {
+                    crop.forEach((crop) => {
+                        if (crop?.crop?.trim()) {
+                            const cropRef = doc(collection(firestoreDB, `farmers/${farmerId}/crops`))
+                            transaction.set(cropRef, { ...crop })
+                        }
+                    })
+                }
 
-                livestock.forEach((livestock) => {
-                    if (livestock.livestock.trim() !== '') {
-                        const livestockRef = doc(collection(firestoreDB, `farmers/${farmerRef.id}/livestock`))
-                        transaction.set(livestockRef, { ...livestock })
-                    }
-                })
+                if (Array.isArray(livestock)) {
+                    livestock.forEach((livestock) => {
+                        if (livestock?.livestock?.trim()) {
+                            const livestockRef = doc(collection(firestoreDB, `farmers/${farmerId}/livestock`))
+                            transaction.set(livestockRef, { ...livestock })
+                        }
+                    })
+                }
             })
 
-            showToast({ title: 'Success', description: `Added in successfully`, status: 'success', variant: 'solid', position: 'top' })
-            setPersonalInformation([])
-            setChildren([])
-            setEducation([])
-            setCrop([])
-            setLivestock([])
-            setFarmerImage(null)
-            setProfileThumbnail('')
+            showToast({ title: 'Success', description: `Added successfully`, status: 'success', variant: 'solid', position: 'top' })
+            handleClose()
         } catch (error) {
-            showToast({ title: 'Error', description: `${error}`, status: 'Error', variant: 'solid', position: 'top' })
+            showToast({ title: 'Error', description: `${error}`, status: 'error', variant: 'solid', position: 'top' })
         } finally {
             setLoading(false)
-            onClose()
         }
     }
 
     const handleClose = () => {
         onClose()
         setPersonalInformation([])
-        setChildren([])
+        setChildren([{
+            elementary: '',
+            elementaryGraduateYear: '',
+            highSchool: '',
+            highSchoolGraduateYear: '',
+            college: '',
+            collegeGraduateYear: '',
+            course: '',
+        }])
         setEducation([])
-        setCrop([])
-        setLivestock([])
+        setCrop([{
+            crop: '', variety: '', geoLocation: '', noTrees: '', cultivatedArea: '',
+            volumeOfProduction: '', totalVolume: '', totalVolumeSold: ''
+        }])
+        setLivestock([{
+            livestock: '',
+            breed: '',
+            geoLocation: '',
+            noOfHeads: '',
+            totalVolume: '',
+            totalVolumeSold: ''
+        }])
         setFarmerImage(null)
         setProfileThumbnail('')
     }
@@ -247,8 +265,8 @@ export default function AddFarmer({ isOpen, onClose }) {
     return (
         <Chakra.Modal isOpen={isOpen} onClose={onClose} size='full'>
             <Chakra.ModalContent p='0 2.5vw 0 2.5vw'>
-                <Chakra.ModalHeader p='.5vw 0 .5vw 0' display='flex' alignItems='center' justifyContent='space-between'>
-                    <Chakra.Heading>Add Farmer</Chakra.Heading>
+                <Chakra.ModalHeader p='.7vw 0 .7vw 0' display='flex' alignItems='center' justifyContent='space-between'>
+                    <Chakra.Heading display='flex' alignItems='center'><Chakra.Icon as={LuUserRoundPlus} mr='.5vw' /> Add Farmer</Chakra.Heading>
                     {
                         loading && (
                             <Chakra.Box display='flex' alignItems='center'>
@@ -258,16 +276,16 @@ export default function AddFarmer({ isOpen, onClose }) {
                         )
                     }
 
-                    <Chakra.Button onClick={handleClose} h='1.8vw' fontSize='xs' variant='accent' leftIcon={<Chakra.Icon as={IoClose} fontSize='md' />}>Cancel</Chakra.Button>
+                    <Chakra.Button onClick={handleClose} h='1.5vw' fontSize='xs' variant='accent' leftIcon={<Chakra.Icon as={IoClose} fontSize='md' />}>Cancel</Chakra.Button>
                 </Chakra.ModalHeader>
                 <hr />
-                <Chakra.ModalBody p='1.5vw 0 5vw 0'>
+                <Chakra.ModalBody p='1.5vw 0 4vw 0'>
                     <form onSubmit={handleSubmit}>
-                        <Chakra.Box w='100%' display='flex'>
+                        <Chakra.Box w='100%' mb='1vw' display='flex'>
                             <Chakra.Box w='30%' display='flex' flexDirection='column' alignItems='center'>
-                                <Chakra.Image src={profileThumbnail || thumnail} alt='image' w='15vw' h='15vw' mt='2vw' objectFit='cover' borderRadius='.8vw' />
+                                <Chakra.Image src={profileThumbnail || thumnail} alt='image' w='15vw' h='15vw' mt='2vw' objectFit='cover' border='.1vw solid rgb(177, 177, 177)' borderRadius='.9vw' />
                                 <Chakra.Input type='file' accept='image/*' onChange={handleFarmerImageChange} hidden id='imageUploader' />
-                                <Chakra.Button onClick={() => document.getElementById('imageUploader').click()} variant='accent' w='15vw' mt='.8vw'>Select Image</Chakra.Button>
+                                <Chakra.Button onClick={() => document.getElementById('imageUploader').click()} leftIcon={<Chakra.Icon as={LuFolderOpen} />} variant='accent' w='15vw' h='2vw' mt='.8vw' fontSize='.7vw'>Select Image</Chakra.Button>
                             </Chakra.Box>
                             <Chakra.Box w='70%'>
                                 <Chakra.Heading m='1.5vw 0 1.3vw 0' variant='content'>Personal Information</Chakra.Heading>
@@ -459,7 +477,7 @@ export default function AddFarmer({ isOpen, onClose }) {
                                                 </Chakra.Box>
                                                 <Chakra.Box w='23%' display='flex' flexDirection='column'>
                                                     <Chakra.Text>Spouse Date of Birth:</Chakra.Text>
-                                                    <Chakra.Input name='spouseDateOfBirth' onChange={handlePersonalInformationChange} required mt='.1vw' textTransform='capitalize' placeholder='...' />
+                                                    <Chakra.Input name='spouseDateOfBirth' onChange={handlePersonalInformationChange} required type='date' mt='.1vw' />
                                                 </Chakra.Box>
                                                 <Chakra.Box w='23%' display='flex' flexDirection='column'>
                                                     <Chakra.Text>Spouse Age:</Chakra.Text>
@@ -467,7 +485,7 @@ export default function AddFarmer({ isOpen, onClose }) {
                                                 </Chakra.Box>
                                             </Chakra.Box>
                                             {children.map((child, index) => (
-                                                <Chakra.Box key={index} w='100%' mt='1.5vw' display='flex' justifyContent='space-between'>
+                                                <Chakra.Box key={children.length >= 0 && index} w='100%' mt='1.5vw' display='flex' justifyContent='space-between'>
                                                     <Chakra.Box w='23%' display='flex' flexDirection='column'>
                                                         <Chakra.Text>Name of Children:</Chakra.Text>
                                                         <Chakra.Input name='name' value={child.name} onChange={(e) => handleChildrenChange(e, index)} required mt='.1vw' textTransform='capitalize' placeholder='...' />
@@ -537,7 +555,7 @@ export default function AddFarmer({ isOpen, onClose }) {
                                 </Chakra.Box>
                                 <Chakra.Heading m='3.5vw 0 1.3vw 0' variant='content'>Main Crop</Chakra.Heading>
                                 {crop.map((crop, index) => (
-                                    <Chakra.Card key={index} mb='1.5vw' p='1vw' boxShadow='0vw 0vw .7vw rgba(34, 40, 49, 0.21)' borderRadius='.7vw'>
+                                    <Chakra.Card key={crop.length >= 0 && index} mb='1.5vw' p='1vw' boxShadow='0vw 0vw .7vw rgba(34, 40, 49, 0.21)' borderRadius='.7vw'>
                                         <Chakra.Box w='100%' display='flex' justifyContent='space-between'>
                                             <Chakra.Box w='23%' display='flex' flexDirection='column'>
                                                 <Chakra.Text>Crop:</Chakra.Text>
@@ -576,14 +594,14 @@ export default function AddFarmer({ isOpen, onClose }) {
                                         </Chakra.Box>
                                         <Chakra.Box w='100%' mt='1.5vw' display='flex' justifyContent='space-between'>
                                             <Chakra.Box w='100%' display='flex' alignItems='flex-end' justifyContent='right'>
-                                                {index > 0 && (
+                                                {index >= 0 && (
                                                     <Chakra.Button onClick={() => handleDeleteCrop(index)} variant='warning' w='23%' h='2vw' fontSize='.7vw' leftIcon={<Chakra.Icon as={LuTrash2} fontSize='.8vw' />}>Delete Crop</Chakra.Button>
                                                 )}
                                             </Chakra.Box>
                                         </Chakra.Box>
                                     </Chakra.Card>
                                 ))}
-                                <Chakra.Box w='100%' mt='1.5vw' display='flex' justifyContent='space-between'>
+                                <Chakra.Box w='100%' mt='1.5vw' p='0 1vw 0 1vw' display='flex' justifyContent='space-between'>
                                     <Chakra.Box w='23%' display='flex' flexDirection='column' />
                                     <Chakra.Box w='23%' display='flex' flexDirection='column' />
                                     <Chakra.Box w='23%' display='flex' flexDirection='column' />
@@ -593,7 +611,7 @@ export default function AddFarmer({ isOpen, onClose }) {
                                 </Chakra.Box>
                                 <Chakra.Heading m='3.5vw 0 1.3vw 0' variant='content'>Livestock</Chakra.Heading>
                                 {livestock.map((livestock, index) => (
-                                    <Chakra.Card key={index} mb='1.5vw' p='1vw' boxShadow='0vw 0vw .7vw rgba(34, 40, 49, 0.21)' borderRadius='.7vw'>
+                                    <Chakra.Card key={livestock.length >= 0 && index} mb='1.5vw' p='1vw' boxShadow='0vw 0vw .7vw rgba(34, 40, 49, 0.21)' borderRadius='.7vw'>
                                         <Chakra.Box w='100%' mt='1.5vw' display='flex' justifyContent='space-between'>
                                             <Chakra.Box w='48.7%' display='flex' flexDirection='column'>
                                                 <Chakra.Text>Livestock:</Chakra.Text>
@@ -624,14 +642,14 @@ export default function AddFarmer({ isOpen, onClose }) {
                                         </Chakra.Box>
                                         <Chakra.Box w='100%' mt='1.5vw' display='flex' justifyContent='space-between'>
                                             <Chakra.Box w='100%' display='flex' alignItems='flex-end' justifyContent='right'>
-                                                {index > 0 && (
-                                                    <Chakra.Button onClick={() => handleDeleteLivestock(index)} variant='warning' w='23%' h='2vw' mb='2vw' fontSize='.7vw' leftIcon={<Chakra.Icon as={LuTrash2} fontSize='.8vw' />}>Delete Livestock</Chakra.Button>
+                                                {index >= 0 && (
+                                                    <Chakra.Button onClick={() => handleDeleteLivestock(index)} variant='warning' w='23%' h='2vw' fontSize='.7vw' leftIcon={<Chakra.Icon as={LuTrash2} fontSize='.8vw' />}>Delete Livestock</Chakra.Button>
                                                 )}
                                             </Chakra.Box>
                                         </Chakra.Box>
                                     </Chakra.Card>
                                 ))}
-                                <Chakra.Box w='100%' mt='1.5vw' display='flex' justifyContent='space-between'>
+                                <Chakra.Box w='100%' mt='1.5vw' p='0 1vw 0 1vw' display='flex' justifyContent='space-between'>
                                     <Chakra.Box w='23%' display='flex' flexDirection='column' />
                                     <Chakra.Box w='23%' display='flex' flexDirection='column' />
                                     <Chakra.Box w='23%' display='flex' flexDirection='column' />
@@ -641,12 +659,13 @@ export default function AddFarmer({ isOpen, onClose }) {
                                 </Chakra.Box>
                             </Chakra.Box>
                         </Chakra.Box>
-                        <Chakra.Box mt='2vw' display='flex' justifyContent='right'>
-                            <Chakra.Button type='submit' leftIcon={<Chakra.Icon as={LuSend} fontSize='md' />} isLoading={loading}>Submit</Chakra.Button>
+                        <hr />
+                        <Chakra.Box mt='1vw' p='0 1vw 0 1vw' display='flex' justifyContent='right'>
+                            <Chakra.Button type='submit' w='69%' h='2vw' leftIcon={<Chakra.Icon as={LuSend} fontSize='md' />} isLoading={loading}>Submit</Chakra.Button>
                         </Chakra.Box>
                     </form>
                 </Chakra.ModalBody>
             </Chakra.ModalContent>
-        </Chakra.Modal >
+        </Chakra.Modal>
     )
 }

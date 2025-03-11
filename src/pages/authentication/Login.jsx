@@ -4,6 +4,7 @@ import { LuUserRound } from "react-icons/lu"
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../config/Authentication'
 import Toast from '../../components/layouts/Toast'
+
 export default function Login() {
 
     const { login } = useAuth()
@@ -29,24 +30,24 @@ export default function Login() {
     }
 
     return (
-        <Chakra.Box w='100%' h='100%' bg='#353535' display='flex' alignItems='center' justifyContent='center'>
-            <Chakra.Box w='30%' p='2vw' bg='white'>
+        <Chakra.Box w='100%' h='100%' display='flex' alignItems='center' justifyContent='center'>
+            <Chakra.Card w='30%' p='2vw' bg='white'>
                 <Chakra.Box mb='.3vw' display='flex' alignItems='center' justifyContent='space-between'>
-                    <Chakra.Heading fontSize='.8vw' textTransform='uppercase'>Login</Chakra.Heading>
+                    <Chakra.Heading>Login</Chakra.Heading>
                     <Chakra.Text fontSize='1vw'><LuUserRound /></Chakra.Text>
                 </Chakra.Box>
                 <hr />
                 <form onSubmit={handleLogin}>
                     <Chakra.Box mt='1.5vw'>
-                        <Chakra.Text fontSize='.9vw' fontWeight='500'>Email:</Chakra.Text>
-                        <Chakra.Input required ref={email} variant='filled' type='email' h='2.2vw' fontSize='.9vw' fontWeight='400' placeholder='...' />
-                        <Chakra.Text mt='1vw' fontSize='.9vw' fontWeight='400'>Password:</Chakra.Text>
-                        <Chakra.Input required ref={password} variant='filled' type='password' h='2.2vw' mb='1vw' fontSize='.9vw' fontWeight='700' placeholder='...' />
+                        <Chakra.Text fontSize='.9vw'>Email:</Chakra.Text>
+                        <Chakra.Input required ref={email} type='email' h='2.2vw' fontSize='.9vw' placeholder='...' />
+                        <Chakra.Text mt='1vw' fontSize='.9vw'>Password:</Chakra.Text>
+                        <Chakra.Input required ref={password} variant='filled' type='password' h='2.2vw' mb='1vw' fontSize='.9vw' placeholder='...' />
                         <hr />
-                        <Chakra.Button type='submit' isLoading={loading} w='100%' h='2.2vw' mt='1vw' bg='#3C6E71' color='white' fontSize='.9vw'>Continue</Chakra.Button>
+                        <Chakra.Button type='submit' isLoading={loading} w='100%' h='2.2vw' mt='1vw' fontSize='.8vw'>Continue</Chakra.Button>
                     </Chakra.Box>
                 </form>
-            </Chakra.Box>
+            </Chakra.Card>
         </Chakra.Box>
     )
 }

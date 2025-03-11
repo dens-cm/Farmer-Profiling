@@ -247,6 +247,30 @@ const theme = extendTheme({
                     color: mode('light.accent', 'dark.accent')(props)
                 })
             }
+        },
+        Modal: {
+            baseStyle: {
+                dialog: {
+                    p: '1.5vw',
+                    borderRadius: '.7vw'
+                }
+            }
+        },
+        Card: {
+            baseStyle: {
+                container: {
+                    borderRadius: '1vw'
+                }
+            }
+        },
+        Menu: {
+            baseStyle: {
+                list: {
+                    borderRadius: '.7vw',
+                    p: '1vw',
+                    boxShadow: 'md', 
+                }
+            }
         }
     },
     styles: {
