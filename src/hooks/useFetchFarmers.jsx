@@ -7,6 +7,8 @@ export const useFetchFarmers = () => {
     const [total, setTotal] = useState(0)
     const [maleCount, setMaleCount] = useState(0)
     const [femaleCount, setFemaleCount] = useState(0)
+    const [civilStatusCounts, setCivilStatusCounts] = useState({})
+    const [sourceOfIncomeCounts, setSourceOfIncome] = useState({})
     const [error, setError] = useState(null)
 
     useEffect(() => {
@@ -19,6 +21,8 @@ export const useFetchFarmers = () => {
                     const farmersArray = []
                     let male = 0
                     let female = 0
+                    const statusCounts = {}
+                    const incomeCounts = {}
 
                     farmerSnapshot.forEach((farmerDoc) => {
                         const farmerId = farmerDoc.id
@@ -37,12 +41,22 @@ export const useFetchFarmers = () => {
                                     // Count gender occurrences
                                     if (farmerData.gender === 'Male') male++
                                     if (farmerData.gender === 'Female') female++
+
+                                     // Count civil status occurrences
+                                     const status = farmerData.civilStatus || 'Unknown'
+                                     statusCounts[status] = (statusCounts[status] || 0) + 1
+                                     
+                                     // Count source of income occurrences
+                                     const income = farmerData.sourceOfIncome || 'Unknown'
+                                     incomeCounts[income] = (incomeCounts[income] || 0) + 1
                                 })
 
                                 setData([...farmersArray])
                                 setTotal(farmersArray.length)
                                 setMaleCount(male)
                                 setFemaleCount(female)
+                                setCivilStatusCounts(statusCounts)
+                                setSourceOfIncome(incomeCounts)
                             },
                             (personalInfoError) => {
                                 setError(personalInfoError.message)
@@ -65,5 +79,5 @@ export const useFetchFarmers = () => {
         }
     }, [])
 
-    return { data, total, maleCount, femaleCount, error }
+    return { data, total, maleCount, femaleCount, civilStatusCounts, sourceOfIncomeCounts, error }
 }

@@ -4,7 +4,8 @@ import * as Chakra from '@chakra-ui/react'
 import { ThemeProvider } from '@mui/material/styles'
 import { MaterialReactTable } from 'material-react-table'
 import { theme } from '../tables/TableTheme'
-import { LuTrash2, LuFilePenLine, LuExternalLink } from "react-icons/lu"
+import { HiMiniTrash } from "react-icons/hi2"
+import { FaEdit, FaExpandAlt } from "react-icons/fa"
 
 export default function ListOfFarmers({ onOpenViewFarmerModal, onOpenDeleteFarmerModal, data, farmerId, loading, error }) {
 
@@ -58,11 +59,11 @@ export default function ListOfFarmers({ onOpenViewFarmerModal, onOpenDeleteFarme
                         mr='.5vw' bg='#EA5455'
                         color='#E8E8E8' p='.2vw .7vw .2vw .7vw'
                         borderRadius='.7vw' _hover={{ bg: '#fe7778' }}
-                        leftIcon={<Chakra.Icon as={LuTrash2} strokeWidth='.2vw' />}
+                        leftIcon={<Chakra.Icon as={HiMiniTrash}/>}
                         transition='.3s'>
                         Delete
                     </Chakra.Button>
-                    <Chakra.Button mr='.5vw' bg='#495464' color='#E8E8E8' p='.2vw .7vw .2vw .7vw' borderRadius='.7vw' _hover={{ bg: '#606f84' }} leftIcon={<Chakra.Icon as={LuFilePenLine} strokeWidth='.2vw' />} transition='.3s'>Edit</Chakra.Button>
+                    <Chakra.Button mr='.5vw' bg='#495464' color='#E8E8E8' p='.2vw .7vw .2vw .7vw' borderRadius='.7vw' _hover={{ bg: '#606f84' }} leftIcon={<Chakra.Icon as={FaEdit} />} transition='.3s'>Edit</Chakra.Button>
                     <Chakra.Button
                         onClick={() => {
                             farmerId(row.original.id)
@@ -71,7 +72,7 @@ export default function ListOfFarmers({ onOpenViewFarmerModal, onOpenDeleteFarme
                         bg='#00ADB5' color='#E8E8E8'
                         p='.2vw .7vw .2vw .7vw' fontSize='.7vw'
                         borderRadius='.7vw' _hover={{ bg: '#00c0c8' }}
-                        leftIcon={<Chakra.Icon as={LuExternalLink} strokeWidth='.2vw' />}
+                        leftIcon={<Chakra.Icon as={FaExpandAlt} />}
                         transition='.3s'>
                         View
                     </Chakra.Button>

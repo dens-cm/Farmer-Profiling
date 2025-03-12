@@ -26,11 +26,11 @@ export default function Header() {
             </Chakra.Box>
             <Chakra.InputGroup w='60%'>
                 <Chakra.InputLeftElement><LuSearch /></Chakra.InputLeftElement>
-                <Chakra.Input placeholder='Search...' />
+                <Chakra.Input placeholder='Search farmer...' />
             </Chakra.InputGroup>
             <Chakra.Box w='17%' display='flex' alignItems='center' justifyContent='right'>
                 <Chakra.Menu>
-                    <Chakra.MenuButton h='1.8vw' mr='1vw' p='.5vw .5vw .5vw .5vw' fontSize='.7vw' as={Chakra.Button} leftIcon={<HiOutlineBell size='1vw' strokeWidth='.2vw' />} borderRadius='full'>Notifications</Chakra.MenuButton>
+                    <Chakra.MenuButton h='1.8vw' mr='1vw' p='.5vw .5vw .5vw .5vw' fontSize='.7vw' as={Chakra.Button} leftIcon={<HiOutlineBell size='1vw' strokeWidth='.1vw' />} borderRadius='full'>Notifications</Chakra.MenuButton>
                     <Chakra.MenuList display='flex' flexDirection='column' alignItems='center'>
                         <Chakra.Text mb='.5vw' variant='caption' fontSize='1.5vw' color='light.placeholder' textAlign='center'>{<HiOutlineFaceFrown />}</Chakra.Text>
                         <Chakra.Text variant='caption' color='light.placeholder' textAlign='center'>This feature is currently under development.</Chakra.Text>

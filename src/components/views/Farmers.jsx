@@ -1,6 +1,6 @@
 import React from 'react'
 import * as Chakra from '@chakra-ui/react'
-import { LuUserRoundPlus } from "react-icons/lu"
+import { FaUserPlus } from "react-icons/fa"
 import { useFetchFarmers } from '../../hooks/useFetchFarmers'
 import AddFarmer from '../modals/AddFarmer'
 import ViewFarmer from '../modals/ViewFarmer'
@@ -17,10 +17,10 @@ export default function Farmers() {
 
     return (
         <Chakra.Box w='100%' h='100%' display='flex' flexDirection='column' overflow='auto'>
-            <Chakra.Heading variant='content'>List of Farmers</Chakra.Heading>
+            <Chakra.Heading mt='1vw' variant='content'>List of Farmers</Chakra.Heading>
             <Chakra.Box mt='2vw' display='flex' alignItems='flex-end' justifyContent='space-between'>
                 <Chakra.Text variant='caption'>Total Farmers: {total}</Chakra.Text>
-                <Chakra.Button onClick={onOpenAddFarmerModal} h='1.8vw' fontSize='xs' variant='highlight' leftIcon={<Chakra.Icon as={LuUserRoundPlus} fontSize='md' />}>Add farmer</Chakra.Button>
+                <Chakra.Button onClick={onOpenAddFarmerModal} h='1.8vw' fontSize='xs' variant='highlight' leftIcon={<Chakra.Icon as={FaUserPlus} fontSize='md' />}>Add farmer</Chakra.Button>
             </Chakra.Box>
             <Chakra.Box h='100%' m='1vw 0 1vw 0' p='0 1vw 0 1vw' bg='white' borderRadius='.7vw' overflow='auto'>
                 <ListOfFarmers onOpenViewFarmerModal={onOpenViewFarmerModal} onOpenDeleteFarmerModal={onOpenDeleteFarmerModal} data={data} loading={loading} error={error} farmerId={setFarmerId}/>

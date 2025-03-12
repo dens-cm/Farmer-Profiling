@@ -13,8 +13,8 @@ export default function App() {
     <Chakra.Box w='100%' h='100%' p='0 2.5vw 0 2.5vw' display='flex' flexDirection='column'>
       <Header />
       <hr/>
-      <Chakra.Box w='100%' h='100%' pt='1vw' display='flex' justifyContent='space-between' overflow='auto'>
-        <Chakra.Box w='12%' h='100%'>
+      <Chakra.Box w='100%' h='100%' display='flex' justifyContent='space-between' overflow='auto'>
+        <Chakra.Box w='12%' h='100%' pt='1vw'>
           <NavigationBar view={view} setView={setView} />
         </Chakra.Box>
         <Chakra.Box w='82.5%' h='100%'>
