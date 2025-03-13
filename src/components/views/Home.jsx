@@ -1,12 +1,12 @@
 import React from 'react'
 import * as Chakra from '@chakra-ui/react'
-import { VictoryChart, VictoryBar, VictoryAxis, VictoryTheme, VictoryLabel } from 'victory'
-import { FaMars, FaVenus, FaUsers, FaHouseUser, FaCommentsDollar } from "react-icons/fa"
+import { VictoryChart, VictoryBar, VictoryAxis, VictoryTheme, VictoryLabel, VictoryPie, VictoryLegend } from 'victory'
+import { FaMars, FaVenus, FaUsers, FaHouseUser, FaCommentsDollar, FaLeaf } from "react-icons/fa"
 import { useFetchFarmers } from '../../hooks/useFetchFarmers'
 
 export default function Home() {
 
-    const { total, maleCount, femaleCount, civilStatusCounts, sourceOfIncomeCounts } = useFetchFarmers()
+    const { total, maleCount, femaleCount, civilStatusCounts, sourceOfIncomeCounts, topCrops, totalCrops } = useFetchFarmers()
     const civilStatusLabels = Object.keys(civilStatusCounts)
     const civilStatusData = civilStatusLabels.map(status => civilStatusCounts[status])
     const sourceOfIncomeLabels = Object.keys(sourceOfIncomeCounts)
@@ -69,7 +69,7 @@ export default function Home() {
                                 style={{
                                     data: { fill: "#00ADB5" }
                                 }}
-                                labelComponent={<VictoryLabel dy={15} style={{ fontSize: 7, fill: 'white' }} />}
+                                labelComponent={<VictoryLabel dy={-5} style={{ fontSize: 7, fill: 'black' }} />}
                             />
                         </VictoryChart>
                     </Chakra.Card>
@@ -102,7 +102,7 @@ export default function Home() {
                                 style={{
                                     data: { fill: "#03b1fc" }
                                 }}
-                                labelComponent={<VictoryLabel dy={15} style={{ fontSize: 7, fill: 'white' }} />}
+                                labelComponent={<VictoryLabel dy={-5} style={{ fontSize: 7, fill: 'black' }} />}
                             />
                         </VictoryChart>
                     </Chakra.Card>
@@ -111,7 +111,44 @@ export default function Home() {
             <Chakra.Heading mt='3vw' variant='content' textTransform='uppercase'>Farming & Production</Chakra.Heading>
             <Chakra.Box mt='1vw' display='flex' flexDirection='column'>
                 <Chakra.Box display='flex' justifyContent='space-between'>
-                    
+                    <Chakra.Card w='49%' p='1.5vw' transition='.3s'>
+                        <Chakra.Box mb='1vw' display='flex' alignItems='center' justifyContent='center'>
+                            <Chakra.Text mr='1vw' fontSize='1vw'><FaLeaf /></Chakra.Text>
+                            <Chakra.Text fontWeight='500'>Top 5 Crops Grown</Chakra.Text>
+                        </Chakra.Box>
+                        {topCrops.length > 0 ? (
+                            <Chakra.Box display="flex" alignItems="center" justifyContent="center">
+                                <VictoryLegend
+                                    x={40}
+                                    y={80}
+                                    width={250}
+                                    colorScale={["#5ae68b", "#21e6fc", "#21a8fc", "#c66bfa", "#f576d7"]}
+                                    data={topCrops.map((crop) => ({ name: `${crop.x.toUpperCase()} - (total ${crop.y})` }))}
+                                    style={{
+                                        labels: { fontSize: 10, fontWeight: 'bold' }
+                                    }}
+                                />
+                                <VictoryPie
+                                    innerRadius={45}
+                                    data={topCrops}
+                                    colorScale={["#5ae68b", "#21e6fc", "#21a8fc", "#c66bfa", "#f576d7"]}
+                                    labels={({ datum }) => `${((datum.y / totalCrops) * 100).toFixed()}%`}
+                                    labelRadius={85}
+                                    padAngle={3} 
+                                    cornerRadius={7} 
+                                    style={{
+                                        labels: { fontSize: 11, fontWeight: 'bold' }
+                                    }}
+                                    height={250}
+                                    width={250}
+                                />
+                            </Chakra.Box>
+
+
+                        ) : (
+                            <Chakra.Text mt='2vw' textAlign='center'>No crop data available</Chakra.Text>
+                        )}
+                    </Chakra.Card>
                 </Chakra.Box>
             </Chakra.Box>
         </Chakra.Box>
