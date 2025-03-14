@@ -1,12 +1,13 @@
 import React from 'react'
 import * as Chakra from '@chakra-ui/react'
 import { VictoryChart, VictoryBar, VictoryAxis, VictoryTheme, VictoryLabel, VictoryPie, VictoryLegend } from 'victory'
-import { FaMars, FaVenus, FaUsers, FaHouseUser, FaCommentsDollar, FaLeaf } from "react-icons/fa"
+import { FaMars, FaVenus, FaUsers, FaHouseUser, FaCommentsDollar, FaLeaf, FaPagelines } from "react-icons/fa"
 import { useFetchFarmers } from '../../hooks/useFetchFarmers'
+import CropsPlanted from '../tables/CropsPlanted'
 
 export default function Home() {
 
-    const { total, maleCount, femaleCount, civilStatusCounts, sourceOfIncomeCounts, topCrops, totalCrops } = useFetchFarmers()
+    const { total, maleCount, femaleCount, civilStatusCounts, sourceOfIncomeCounts, cropFarmerCounts, topCrops, totalCrops } = useFetchFarmers()
     const civilStatusLabels = Object.keys(civilStatusCounts)
     const civilStatusData = civilStatusLabels.map(status => civilStatusCounts[status])
     const sourceOfIncomeLabels = Object.keys(sourceOfIncomeCounts)
@@ -122,8 +123,8 @@ export default function Home() {
                                     x={40}
                                     y={80}
                                     width={250}
-                                    colorScale={["#5ae68b", "#21e6fc", "#21a8fc", "#c66bfa", "#f576d7"]}
-                                    data={topCrops.map((crop) => ({ name: `${crop.x.toUpperCase()} - (total ${crop.y})` }))}
+                                    colorScale={["#5ae68b", "#21e6fc", "#21a8fc", "#c66bfa", "#f576d7", "#fc5887"]}
+                                    data={topCrops.map((crop) => ({ name: `${crop.x.toUpperCase()} - ${crop.y} (farms)` }))}
                                     style={{
                                         labels: { fontSize: 10, fontWeight: 'bold' }
                                     }}
@@ -131,11 +132,11 @@ export default function Home() {
                                 <VictoryPie
                                     innerRadius={45}
                                     data={topCrops}
-                                    colorScale={["#5ae68b", "#21e6fc", "#21a8fc", "#c66bfa", "#f576d7"]}
+                                    colorScale={["#5ae68b", "#21e6fc", "#21a8fc", "#c66bfa", "#f576d7", "#fc5887"]}
                                     labels={({ datum }) => `${((datum.y / totalCrops) * 100).toFixed()}%`}
                                     labelRadius={85}
-                                    padAngle={3} 
-                                    cornerRadius={7} 
+                                    padAngle={3}
+                                    cornerRadius={7}
                                     style={{
                                         labels: { fontSize: 11, fontWeight: 'bold' }
                                     }}
@@ -148,6 +149,13 @@ export default function Home() {
                         ) : (
                             <Chakra.Text mt='2vw' textAlign='center'>No crop data available</Chakra.Text>
                         )}
+                    </Chakra.Card>
+                    <Chakra.Card w='49%' p='1.5vw' transition='.3s'>
+                        <Chakra.Box mb='1vw' display='flex' alignItems='center' justifyContent='center'>
+                            <Chakra.Text mr='1vw' fontSize='1vw'><FaPagelines /></Chakra.Text>
+                            <Chakra.Text fontWeight='500'>Crops Planted</Chakra.Text>
+                        </Chakra.Box>
+                        <CropsPlanted cropFarmerCounts={cropFarmerCounts} />
                     </Chakra.Card>
                 </Chakra.Box>
             </Chakra.Box>

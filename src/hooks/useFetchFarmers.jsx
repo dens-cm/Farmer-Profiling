@@ -9,6 +9,7 @@ export const useFetchFarmers = () => {
     const [femaleCount, setFemaleCount] = useState(0)
     const [civilStatusCounts, setCivilStatusCounts] = useState({})
     const [sourceOfIncomeCounts, setSourceOfIncome] = useState({})
+    const [cropFarmerCounts, setCropFarmerCounts] = useState([])
     const [topCrops, setTopCrops] = useState([])
     const [totalCrops, setTotalCrops] = useState(0)
     const [error, setError] = useState(null)
@@ -26,6 +27,7 @@ export const useFetchFarmers = () => {
                     const statusCounts = {}
                     const incomeCounts = {}
                     const cropCounts = {}
+                    const cropFarmers = {}
 
                     farmerSnapshot.forEach((farmerDoc) => {
                         const farmerId = farmerDoc.id
@@ -72,22 +74,48 @@ export const useFetchFarmers = () => {
                         const unsubscribeCrops = onSnapshot(
                             cropsRef,
                             (cropsSnapshot) => {
+                                const farmerCrops = new Set()
+
                                 cropsSnapshot.forEach((cropDoc) => {
-                                    // Normalize crop name to lowercase
                                     const cropName = (cropDoc.data().crop || 'Unknown').toLowerCase()
+
+                                    // Count total crops
                                     cropCounts[cropName] = (cropCounts[cropName] || 0) + 1
+
+                                    // Track farmers planting this crop
+                                    farmerCrops.add(cropName)
                                 })
 
+                                // Update the cropFarmers count
+                                farmerCrops.forEach((crop) => {
+                                    cropFarmers[crop] = (cropFarmers[crop] || 0) + 1
+                                })
+
+                                // Update states
                                 const totalCropsCount = Object.values(cropCounts).reduce((sum, count) => sum + count, 0)
                                 setTotalCrops(totalCropsCount)
 
-                                // Get top 5 crops
-                                const sortedCrops = Object.entries(cropCounts)
-                                    .sort((a, b) => b[1] - a[1])
-                                    .slice(0, 5)
-                                    .map(([crop, count]) => ({ x: crop, y: count }))
+                                // Sort crops by count
+                                const sortedCrops = Object.entries(cropCounts).sort((a, b) => b[1] - a[1])
 
-                                setTopCrops(sortedCrops)
+                                // Extract top 5 crops
+                                const top5 = sortedCrops.slice(0, 5).map(([crop, count]) => ({ x: crop, y: count }))
+
+                                // Sum the rest as "Others"
+                                const othersCount = sortedCrops.slice(5).reduce((sum, [, count]) => sum + count, 0)
+                                if (othersCount > 0) {
+                                    top5.push({ x: "Others", y: othersCount })
+                                }
+
+                                setTopCrops(top5)
+
+                                // Convert cropFarmers to array format for table
+                                const cropFarmerArray = Object.entries(cropFarmers).map(([crop, count]) => ({
+                                    crop: crop,
+                                    totalFarmer: count
+                                }))
+
+                                setCropFarmerCounts(cropFarmerArray)
                             },
                             (cropsError) => {
                                 setError(cropsError.message)
@@ -110,5 +138,5 @@ export const useFetchFarmers = () => {
         }
     }, [])
 
-    return { data, total, maleCount, femaleCount, civilStatusCounts, sourceOfIncomeCounts, topCrops, totalCrops, error }
+    return { data, total, maleCount, femaleCount, civilStatusCounts, sourceOfIncomeCounts, cropFarmerCounts, topCrops, totalCrops, error }
 }
