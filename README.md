@@ -1,4 +1,4 @@
-# 🌾 Farmer Profiling System
+# 🌾 Farmer Profiling System  *(concept)*
 
 **Project Status:** *Pending*  
 
